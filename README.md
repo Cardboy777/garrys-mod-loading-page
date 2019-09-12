@@ -1,2 +1,2 @@
 # garrys-mod-loading-page
- A loading page for Garry's Mod
+A quick and dirty solution to a garry's mod Server page
