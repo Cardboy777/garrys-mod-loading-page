@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"> <!--Roboto Font-->
+  <title>Loading</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      font-size: 100%;
+      vertical-align: baseline;
+      background: transparent;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      background-color: rgb(39, 39, 39);
+      font-family: Roboto;
+        color: white;
+        font-size: 18px;
+    }
+
+    .left{
+        width: 20%;
+        border-right: 1px rgb(187, 187, 187) solid;
+    }
+    .middle{
+        display: flex;
+        justify-content: center;
+        width: 60%;
+    }
+    .right{
+        text-align: right;
+        width: 20%;
+        border-left: 1px rgb(187, 187, 187) solid;
+    }
+
+    .top {
+        display: flex;
+        background-color: rgb(233, 233, 233);
+        color: black;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .top img{
+        height: 80px;
+        margin: 0 20px;
+    }
+
+    #root{
+        min-height: 100%;
+        max-height: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #container{
+        height: 100%;
+        padding: 30px 100px;
+    }
+
+    #mapname, #gamemode{
+        font-size: 42px;
+    }
+
+    #title{
+        text-align: center;
+        font-size: 64px;
+    }
+
+    #slideshow{
+        background-color: black;
+        margin: 40px auto;
+        width: 90%;
+        height: 72vh;
+    }
+
+    #slide{
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+
+        transition: opacity 1s;
+    }
+
+
+    #progressBar{
+        position: absolute;
+        bottom: 50px;
+        height: 15px;
+        width: calc(100% - 200px);
+        font-size: 12px;
+    }
+    #percent{
+        font-size: 18px;
+        font-weight: bolder;
+    }
+    #currentFile{
+        font-size: 18px;
+    }
+    #status{
+        text-align: right;
+    }
+    #outerBar {
+        background-color: white;
+        padding: 2px;
+        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+    }
+    #innerBar {
+        width: 0;
+        height: 100%;
+        background-color: rgb(0, 102, 255);
+        border-radius: 3px;
+        transition: width 300ms linear, background 1s linear;
+    }
+  </style>
+
+</head>
+<body>
+  <div id='root'>
+    <div id='container'>
+      <div id='content'>
+        <div class="top">
+          <div class='left'>
+              Map:
+              <div id='mapname'></div>
+          </div>
+          <div class="middle">
+            <img src='./img/ogt.png' alt='ogt'/>
+            <div id='title'></div>
+            <img src='./img/ogt.png' alt='ogt'/>
+          </div>
+          <div class="right">
+              Currently Playing:
+              <div id='gamemode'></div>
+          </div>
+        </div>
+        <div id='slideshow'>
+          <img id='slide' src='./img/slides/slide0.jpg' alt='slide' height="100%"/>
+        </div>
+
+        <div id='progressBar'>
+          <span id='percent'></span><span>%&nbsp;</span>
+          <span id='currentFile'></span>
+          <div id='outerBar'>
+            <div id='innerBar'></div>
+          </div>
+          <span id='status'></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const totalSlides = 11;
+    let currentSlide = 0;
+    let color = 0;
+    let slides = []
+
+    let data = {
+        gameDetails : {
+            serverName: 'Server Name',
+            serverURL: 'url here',
+            mapName: 'Map Name',
+            maxPlayers: '20',
+            steamID: 'STEAMID of joining player',
+            gamemode: 'Gamemode',
+        },
+        currentFile : 'real/file/downloading.jpg',
+        filesRemaining : 420,
+        filesTotal: 420,
+        status: 'Initializing...',
+    }
+
+    const changeColor = () => {
+        let elem = document.getElementById('innerBar');
+        let newColor =
+            color + 20 >= 360 ? 0 : color + 40;
+        elem.style.backgroundColor = 'hsl(' + newColor + ',50%,50%)';
+        color = newColor;
+    }
+
+    /**
+     * Randomly shuffle an array
+     * https://stackoverflow.com/a/2450976/1293256
+     * @param  {Array} array The array to shuffle
+     * @return {String}      The first item in the shuffled array
+     */
+    const shuffle = (array) => {
+
+      var currentIndex = array.length;
+      var temporaryValue, randomIndex;
+
+      // While there remain elements to shuffle...
+      while (0 !== currentIndex) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+      }
+
+      return array;
+
+    };
+
+    const changeSlide = () => {
+        const slide = document.getElementById('slide');
+        slide.style.opacity = '0';
+        setTimeout(()=>{
+            slide.src = slides[currentSlide++];
+            if(currentSlide >= totalSlides)
+                currentSlide=0;
+            slide.style.opacity = '100';
+        }, 1000);
+        setTimeout('changeSlide()', 8000);
+    }
+
+    const init = () => {
+        for(let i = 0; i < totalSlides; i++){
+            slides.push(`./img/slides/slide${i}.jpg`);
+        }
+        shuffle(slides);
+        changeSlide();
+
+        setInterval(changeColor, 1000);
+        //set initial, dummy data
+        document.getElementById('title').innerHTML = data.gameDetails.serverName;
+        document.getElementById('mapname').innerHTML = data.gameDetails.mapName;
+        document.getElementById('gamemode').innerHTML = data.gameDetails.gamemode;
+
+        //dynamic information
+        const loadPercent = Math.floor((data.filesTotal - data.filesRemaining)/data.filesTotal * 100)
+        document.getElementById('innerBar').style.width = `${loadPercent}%`;
+        document.getElementById('percent').innerHTML = loadPercent;
+        document.getElementById('currentFile').innerHTML = `${data.currentFile}`;
+        document.getElementById('status').innerHTML = data.status;
+
+        if(loadPercent === 100)
+            document.getElementById('progressBar').style.opacity = `0`;
+
+    }
+
+    window.onload = init;
+
+    /*
+      Called at the start, when the loading screen finishes loading all assets.
+
+      serverName- Server's name.
+        Convar: hostname
+        For exmaple: "Garry's Mod Server"
+      serverURL- URL for the loading screen.
+        Convar: sv_loadingurl
+        For example: "http://mywebsite.com/myloadingscreen.html"
+      mapName- The name of the map the server is playing.
+        For example: "cs_office"
+      maxPlayers- Maximum number of players for the server.
+        Convar: maxplayers
+      steamID- 64-bit, numeric Steam community ID of the client joining.
+        For example: 76561198012345678
+      gamemode- The gamemode the server is currently playing.
+        Convar: gamemode
+        For example: "deathrun"
+    */
+    function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
+        const gameDetails = {servername, serverurl, mapname, maxplayers, steamid, gamemode};
+        data.gameDetails = gameDetails || data.gameDetails;
+
+        //set data
+        document.getElementById('title').innerHTML = data.gameDetails.serverName;
+        document.getElementById('mapname').innerHTML = data.gameDetails.mapName;
+        document.getElementById('gamemode').innerHTML = data.gameDetails.gamemode;
+    }
+
+    /*
+      Called when the client starts downloading a file.
+
+      fileName- The full path and name of the file the client is downloading.
+        This path represents the resource's location rather than the actual file's location on the server.
+        For example, the file "garrysmod/addons/myAddon/materials/models/bobsModels/car.mdl" will be:
+          "materials/models/bobsModels/car.mdl"
+    */
+    function DownloadingFile( currentFile ) {
+        data.currentFile = currentFile || data.currentFile;
+        document.getElementById('currentFile').innerHTML = `${data.currentFile}`;
+    }
+
+    /*
+      Called when the number of files remaining for the client to download changes.
+
+      needed- Number of files left for the client to download.
+    */
+    function SetFilesNeeded( filesRemaining ) {
+        data.filesRemaining = filesRemaining || data.filesRemaining;
+        //dynamic information
+        const loadPercent = Math.floor((data.filesTotal - data.filesRemaining)/data.filesTotal * 100)
+        document.getElementById('innerBar').style.width = `${loadPercent}%`;
+        document.getElementById('percent').innerHTML = loadPercent;
+
+        if(loadPercent === 100)
+            document.getElementById('progressBar').style.opacity = `0`;
+    }
+
+    /*
+      Called at the start
+
+      total- Total number of files the client will have to download.
+    */
+    function SetFilesTotal( filesTotal ) {
+        data.filesTotal = filesTotal || data.filesTotal;
+    }
+
+    /*
+      Called when the client's joining status changes.
+
+      status- Current joining status.
+        For example: "Sending client info..."
+    */
+    function SetStatusChanged( status ) {
+        data.status = status || data.status;
+        document.getElementById('status').innerHTML = data.status;
+    }
+  </script>
+</body>
+</html>
