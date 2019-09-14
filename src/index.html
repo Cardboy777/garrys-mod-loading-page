@@ -21,10 +21,19 @@
       height: 100%;
     }
     body {
-      background-color: rgb(39, 39, 39);
+      background:
+        linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+        linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+        linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+        linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+        linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+        linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+      background-color: #131313;
+      background-size: 20px 20px;
       font-family: Roboto;
         color: white;
         font-size: 18px;
+      transition: background 1s linear;
     }
 
     .left{
@@ -42,16 +51,18 @@
         border-left: 1px rgb(187, 187, 187) solid;
     }
 
-    .top {
+    #top {
         display: flex;
         background-color: rgb(233, 233, 233);
         color: black;
+        border: 4px solid;
         border-radius: 10px;
+        transition: border 1s linear;
         padding: 20px;
     }
 
-    .top img{
-        height: 80px;
+    #top img{
+        height: 74px;
         margin: 0 20px;
     }
 
@@ -68,7 +79,8 @@
     }
 
     #mapname, #gamemode{
-        font-size: 42px;
+        margin-top: 12px;
+        font-size: 32px;
     }
 
     #title{
@@ -77,21 +89,25 @@
     }
 
     #slideshow{
-        background-color: black;
         margin: 40px auto;
-        width: 90%;
-        height: 72vh;
+        height: 70vh;
+        max-height: 90%;
+        width: 80%;
+        border: 2px #e2e2e2 solid;
+        border-radius: 2px;
+        background-color: black;
     }
 
     #slide{
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
+        display: block; 
+        width: 100%; 
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
 
         transition: opacity 1s;
     }
-
-
     #progressBar{
         position: absolute;
         bottom: 50px;
@@ -123,6 +139,95 @@
         border-radius: 3px;
         transition: width 300ms linear, background 1s linear;
     }
+
+    #rainbowBarf {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: absolute;
+      opacity: 0.4;
+
+      top: 0vw;
+      left: 0vw;
+
+      background: red; /* For browsers that do not support gradients */
+      background: -webkit-linear-gradient(left, orange , yellow, green, cyan, blue, violet); /* For Safari 5.1 to 6.0 */
+      background: -o-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Opera 11.1 to 12.0 */
+      background: -moz-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Firefox 3.6 to 15 */
+      background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet); /* Standard syntax (must be last) */
+    }
+
+    #stormswing{
+      position: absolute;
+      bottom: 100px;
+      right: 0;
+      height: 50vh;
+      transform: rotateY(180deg);
+    }
+    #shark{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 60vh;
+    }
+    #squid{
+      position: absolute;
+      bottom: -150px;
+      left: calc(50% - 20vw);
+      width: 40vw;
+    }
+    #frogo{
+      position: absolute;
+      top: 0;
+      right: 60px;
+      transform: rotateZ(180deg) rotateY(180deg);
+      animation: rightToLeft 2000ms infinite linear alternate;
+    }
+
+    @keyframes spinClockwise {
+      from {
+          transform:rotate(0deg);
+      }
+      to {
+          transform:rotate(360deg);
+      }
+    }
+
+    @keyframes spinCounterClockwise {
+      from {
+          transform:rotate(360deg);
+      }
+      to {
+          transform:rotate(0deg);
+      }
+    }
+    @keyframes boing {
+      from {
+          transform: scale(1,1);
+          animation-timing-function: ease-in-out;
+      }
+      40%{
+        transform: scale(1.15,1.15);
+        animation-timing-function: ease-in-out;
+      }
+      70%{
+        transform: scale(1.05,1.05);
+        animation-timing-function: ease-in-out;
+      }
+      to {
+          transform:scale(1.2,1.2);
+          animation-timing-function: ease-in-out;
+      }
+    }
+    @keyframes rightToLeft {
+      from {
+        transform: rotateZ(180deg) rotateY(180deg) translateX(-88vw);
+      }
+      to {
+        transform: rotateZ(180deg) rotateY(180deg) translateX(12vw);
+      }
+    }
   </style>
 
 </head>
@@ -130,15 +235,15 @@
   <div id='root'>
     <div id='container'>
       <div id='content'>
-        <div class="top">
+        <div id="top">
           <div class='left'>
               Map:
               <div id='mapname'></div>
           </div>
           <div class="middle">
-            <img src='./img/ogt.png' alt='ogt'/>
+            <img src='./resource/ogt.png' id='tri1' alt='ogt'/>
             <div id='title'></div>
-            <img src='./img/ogt.png' alt='ogt'/>
+            <img src='./resource/ogt.png' id='tri2' alt='ogt'/>
           </div>
           <div class="right">
               Currently Playing:
@@ -146,7 +251,8 @@
           </div>
         </div>
         <div id='slideshow'>
-          <img id='slide' src='./img/slides/slide0.jpg' alt='slide' height="100%"/>
+          <div id='slide'>
+          </div>
         </div>
 
         <div id='progressBar'>
@@ -159,12 +265,20 @@
         </div>
       </div>
     </div>
+    <div id='rainbowBarf'>
+      <img id='stormswing' src='./resource/stormswing.gif' alt='storm'>
+      <img id='shark' src='./resource/shark.gif' alt='shark'>
+      <img id='squid' src='./resource/squid.gif' alt='squid'>
+      <img id='frogo' src='./resource/frogo.gif' alt='frogo'>
+    </div>
   </div>
   <script>
+    const THE_DROP = 5000;
+    const chanceTime = Math.random() > 0.9;
     const totalSlides = 11;
     let currentSlide = 0;
     let color = 0;
-    let slides = []
+    let slides = [];
 
     let data = {
         gameDetails : {
@@ -176,16 +290,21 @@
             gamemode: 'Gamemode',
         },
         currentFile : 'real/file/downloading.jpg',
-        filesRemaining : 420,
+        filesRemaining : 20,
         filesTotal: 420,
         status: 'Initializing...',
     }
 
     const changeColor = () => {
-        let elem = document.getElementById('innerBar');
-        let newColor =
+      console.log('here')
+        const loading = document.getElementById('innerBar');
+        const top = document.getElementById('top');
+        const newColor =
             color + 20 >= 360 ? 0 : color + 40;
-        elem.style.backgroundColor = 'hsl(' + newColor + ',50%,50%)';
+        const inverseColor = (newColor - 180) < 0 ? newColor + 180 : newColor - 180;
+
+        top.style.borderColor = 'hsl(' + newColor + ',50%,50%)';
+        loading.style.backgroundColor = 'hsl(' + newColor + ',50%,50%)';
         color = newColor;
     }
 
@@ -220,7 +339,8 @@
         const slide = document.getElementById('slide');
         slide.style.opacity = '0';
         setTimeout(()=>{
-            slide.src = slides[currentSlide++];
+            const i = currentSlide
+            slide.style.backgroundImage = `url(${slides[currentSlide++]})`;
             if(currentSlide >= totalSlides)
                 currentSlide=0;
             slide.style.opacity = '100';
@@ -230,7 +350,7 @@
 
     const init = () => {
         for(let i = 0; i < totalSlides; i++){
-            slides.push(`./img/slides/slide${i}.jpg`);
+            slides.push(`./resource/slides/slide${i}.jpg`);
         }
         shuffle(slides);
         changeSlide();
@@ -250,6 +370,22 @@
 
         if(loadPercent === 100)
             document.getElementById('progressBar').style.opacity = `0`;
+          
+        if(chanceTime) {
+          const sound = new Audio('./resource/aotbt.mp3');
+          sound.volume = 0.5;
+          sound.loop = true;
+          sound.play();
+
+          setInterval(()=>{
+            document.getElementById('slideshow').style.animation = 'spinClockwise 10ms infinite linear';
+            document.getElementById('tri1').style.animation = 'spinClockwise 10ms infinite linear';
+            document.getElementById('tri2').style.animation = 'spinCounterClockwise 10ms infinite linear';
+            document.getElementById('top').style.animation = 'boing 1000ms infinite linear alternate';
+            document.getElementById('innerBar').style.cssFloat = 'right';
+            document.getElementById('rainbowBarf').style.display = 'block';
+          }, THE_DROP)
+        }
 
     }
 
