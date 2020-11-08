@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"> <!--Roboto Font-->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
   <title>Loading</title>
 
   <style>
@@ -31,39 +32,43 @@
       background-color: #131313;
       background-size: 20px 20px;
       font-family: Roboto;
-        color: white;
-        font-size: 18px;
+      color: white;
+      font-size: 1rem;
       transition: background 1s linear;
     }
 
     .left{
         width: 20%;
+        height: 100%;
         border-right: 1px rgb(187, 187, 187) solid;
     }
     .middle{
         display: flex;
         justify-content: center;
         width: 60%;
+        height: 100%;
     }
     .right{
         text-align: right;
         width: 20%;
+        height: 100%;
         border-left: 1px rgb(187, 187, 187) solid;
     }
 
     #top {
+        height: 7rem;
         display: flex;
         background-color: rgb(233, 233, 233);
         color: black;
         border: 4px solid;
         border-radius: 10px;
         transition: border 1s linear;
-        padding: 20px;
+        padding: 1.2rem;
     }
 
     #top img{
-        height: 74px;
-        margin: 0 20px;
+        height: 6rem;
+        margin: 0 1rem;
     }
 
     #root{
@@ -75,26 +80,29 @@
 
     #container{
         height: 100%;
-        padding: 30px 100px;
+        padding: 3rem 8rem;
     }
 
     #mapname, #gamemode{
-        margin-top: 12px;
-        font-size: 32px;
+      font-family: 'Montserrat', sans-serif;
+      margin-top: 0.6rem;
+      font-size: 1.8rem;
     }
 
     #title{
         text-align: center;
-        font-size: 64px;
+        font-size: 5rem;
+        font-weight: bolder;
+        line-height: 7rem;
     }
 
     #slideshow{
-        margin: 40px auto;
-        height: 70vh;
+        margin: 2rem auto;
+        height: 65vh;
         max-height: 90%;
         width: 80%;
-        border: 2px #e2e2e2 solid;
-        border-radius: 2px;
+        border: 0.25rem #e2e2e2 solid;
+        border-radius: 0.25rem;
         background-color: black;
     }
 
@@ -110,17 +118,17 @@
     }
     #progressBar{
         position: absolute;
-        bottom: 50px;
-        height: 15px;
+        bottom: 4rem;
+        height: 3rem;
         width: calc(100% - 200px);
-        font-size: 12px;
+        font-size: 1.5rem;
     }
     #percent{
-        font-size: 18px;
-        font-weight: bolder;
+        font-size: 1.8rem;
+        font-weight: bold;
     }
     #currentFile{
-        font-size: 18px;
+        font-size: 1.6rem;
     }
     #status{
         text-align: right;
@@ -130,7 +138,7 @@
         padding: 2px;
         border-radius: 5px;
         width: 100%;
-        height: 100%;
+        height: 1.5rem;
     }
     #innerBar {
         width: 0;
@@ -228,6 +236,7 @@
         transform: rotateZ(180deg) rotateY(180deg) translateX(12vw);
       }
     }
+
   </style>
 
 </head>
@@ -242,7 +251,7 @@
           </div>
           <div class="middle">
             <img src='./resource/ogt.png' id='tri1' alt='ogt'/>
-            <div id='title'></div>
+            <span id='title'></span>
             <img src='./resource/ogt.png' id='tri2' alt='ogt'/>
           </div>
           <div class="right">
@@ -273,30 +282,35 @@
     </div>
   </div>
   <script>
+    const chanceTimeDelay= 5000
     const THE_DROP = 5000;
     const chanceTime = Math.random() > 0.9;
-    const totalSlides = 11;
+    const ultraChanceTime = Math.random() > 0.9;
+
+    const totalSlides = 9;
     let currentSlide = 0;
     let color = 0;
     let slides = [];
 
     let data = {
         gameDetails : {
-            serverName: 'Server Name',
-            serverURL: 'url here',
-            mapName: 'Map Name',
+            serverName: 'OGT Server',
+            serverURL: 'gm.reidk.dev',
+            mapName: 'de_dust',
             maxPlayers: '20',
-            steamID: 'STEAMID of joining player',
-            gamemode: 'Gamemode',
+            steamid: 'XXXXXXXXXXXXXXXXXX',
+            gamemode: 'Trouble in Terrorist Town',
+            volume: 0.3,
+            language: 'en',
         },
         currentFile : 'real/file/downloading.jpg',
-        filesRemaining : 20,
-        filesTotal: 420,
+        filesRemaining : 50,
+        filesTotal: 100,
         status: 'Initializing...',
     }
+    console.log('Chance Time? ', chanceTime);
 
     const changeColor = () => {
-      console.log('here')
         const loading = document.getElementById('innerBar');
         const top = document.getElementById('top');
         const newColor =
@@ -350,7 +364,7 @@
 
     const init = () => {
         for(let i = 0; i < totalSlides; i++){
-            slides.push(`./resource/slides/slide${i}.jpg`);
+            slides.push(`./resource/slides/${i}.jpg`);
         }
         shuffle(slides);
         changeSlide();
@@ -361,30 +375,34 @@
         document.getElementById('mapname').innerHTML = data.gameDetails.mapName;
         document.getElementById('gamemode').innerHTML = data.gameDetails.gamemode;
 
-        //dynamic information
-        const loadPercent = Math.floor((data.filesTotal - data.filesRemaining)/data.filesTotal * 100)
-        document.getElementById('innerBar').style.width = `${loadPercent}%`;
-        document.getElementById('percent').innerHTML = loadPercent;
-        document.getElementById('currentFile').innerHTML = `${data.currentFile}`;
-        document.getElementById('status').innerHTML = data.status;
+        DownloadingFile();
+        SetFilesNeeded();
+        SetFilesTotal();
+        SetStatusChanged();
+        GameDetails(undefined);
 
-        if(loadPercent === 100)
-            document.getElementById('progressBar').style.opacity = `0`;
-          
+        if(chanceTime && ultraChanceTime) {
+            //eh do something
+        }
+        
         if(chanceTime) {
-          const sound = new Audio('./resource/aotbt.mp3');
-          sound.volume = 0.5;
-          sound.loop = true;
-          sound.play();
+          setTimeout(() => {
+        
+            const sound = new Audio('./resource/aotbt.mp3');
+            sound.volume = data.gameDetails.volume;
+            sound.loop = true;
+            sound.play();
 
-          setInterval(()=>{
-            document.getElementById('slideshow').style.animation = 'spinClockwise 10ms infinite linear';
-            document.getElementById('tri1').style.animation = 'spinClockwise 10ms infinite linear';
-            document.getElementById('tri2').style.animation = 'spinCounterClockwise 10ms infinite linear';
-            document.getElementById('top').style.animation = 'boing 1000ms infinite linear alternate';
-            document.getElementById('innerBar').style.cssFloat = 'right';
-            document.getElementById('rainbowBarf').style.display = 'block';
-          }, THE_DROP)
+            setInterval(()=>{
+              document.getElementById('slideshow').style.animation = 'spinClockwise 10ms infinite linear';
+              document.getElementById('tri1').style.animation = 'spinClockwise 10ms infinite linear';
+              document.getElementById('tri2').style.animation = 'spinCounterClockwise 10ms infinite linear';
+              document.getElementById('top').style.animation = 'boing 1000ms infinite linear alternate';
+              document.getElementById('innerBar').style.cssFloat = 'right';
+              document.getElementById('rainbowBarf').style.display = 'block';
+            }, THE_DROP)
+          }, chanceTimeDelay);
+          return;
         }
 
     }
@@ -392,28 +410,27 @@
     window.onload = init;
 
     /*
-      Called at the start, when the loading screen finishes loading all assets.
-
-      serverName- Server's name.
+      serverName - Server's name.
         Convar: hostname
         For exmaple: "Garry's Mod Server"
-      serverURL- URL for the loading screen.
+      serverURL - URL for the loading screen. 
         Convar: sv_loadingurl
         For example: "http://mywebsite.com/myloadingscreen.html"
-      mapName- The name of the map the server is playing.
+      mapName - The name of the map the server is playing. 
         For example: "cs_office"
-      maxPlayers- Maximum number of players for the server.
+      maxPlayers - Maximum number of players for the server.
         Convar: maxplayers
-      steamID- 64-bit, numeric Steam community ID of the client joining.
+      steamID - 64-bit, numeric Steam community ID of the client joining. 
         For example: 76561198012345678
-      gamemode- The gamemode the server is currently playing.
+      gamemode - The gamemode the server is currently playing. 
         Convar: gamemode
         For example: "deathrun"
+      volume - The value of the player's in-game 'volume' console variable, from 0 to 1
+      language - The value of the player's in-game 'gmod_language' console variable, a two letter representation of the player's main menu language
     */
-    function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
-        const gameDetails = {servername, serverurl, mapname, maxplayers, steamid, gamemode};
-        data.gameDetails = gameDetails || data.gameDetails;
-
+    function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language ) {
+        const gameDetails = {servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language};
+        data.gameDetails = gameDetails.steamid !== undefined ? gameDetails : data.gameDetails;
         //set data
         document.getElementById('title').innerHTML = data.gameDetails.serverName;
         document.getElementById('mapname').innerHTML = data.gameDetails.mapName;
@@ -429,7 +446,7 @@
           "materials/models/bobsModels/car.mdl"
     */
     function DownloadingFile( currentFile ) {
-        data.currentFile = currentFile || data.currentFile;
+        data.currentFile = currentFile !== undefined ? currentFile : data.currentFile;
         document.getElementById('currentFile').innerHTML = `${data.currentFile}`;
     }
 
@@ -439,7 +456,7 @@
       needed- Number of files left for the client to download.
     */
     function SetFilesNeeded( filesRemaining ) {
-        data.filesRemaining = filesRemaining || data.filesRemaining;
+        data.filesRemaining = filesRemaining !== undefined ? filesRemaining : data.filesRemaining;
         //dynamic information
         const loadPercent = Math.floor((data.filesTotal - data.filesRemaining)/data.filesTotal * 100)
         document.getElementById('innerBar').style.width = `${loadPercent}%`;
@@ -455,7 +472,8 @@
       total- Total number of files the client will have to download.
     */
     function SetFilesTotal( filesTotal ) {
-        data.filesTotal = filesTotal || data.filesTotal;
+        data.filesTotal = filesTotal !== undefined ? filesTotal : data.filesTotal;
+        SetFilesNeeded();
     }
 
     /*
@@ -465,7 +483,7 @@
         For example: "Sending client info..."
     */
     function SetStatusChanged( status ) {
-        data.status = status || data.status;
+        data.status = status !== undefined ? status : data.status;
         document.getElementById('status').innerHTML = data.status;
     }
   </script>
